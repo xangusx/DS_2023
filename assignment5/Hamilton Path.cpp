@@ -1,32 +1,45 @@
 #include <bits/stdc++.h>
 using namespace std;
+vector<int> topo;
 
 bool topological_sort(int n, vector<vector<int>>& adj, vector<int> indegree){
     queue<int> q;
-    int count = 0;
     for(int i=1; i<=n; i++){
         if(indegree[i] == 0){
-            cout << i << endl;
             q.emplace(i);
-            count++;
+            topo.emplace_back(i);
         }
     }
-    if(count > 1)
+    if(topo.size() > 1)
         return false;
+
+    topo.clear();
     int u;
-    count = 0;
     while(!q.empty()){
         u = q.front();
         q.pop();
-        cout << u << endl;
-        count++;
+        topo.emplace_back(u);
         for(auto v : adj[u]){
             indegree[v]--;
             if(indegree[v] == 0)
                 q.emplace(v);
         }
     }
-    return (count == n);
+    if(topo.size() != n) return false;
+
+    bool flag;
+    for(int i=0; i<n-1; i++){
+        flag = false;
+        for(auto v : adj[topo[i]]){
+            if(v == topo[i+1]){
+                flag = true;
+                break;
+            }
+        }
+        if(flag == false)
+            break;
+    }
+    return flag;
 }
 
 int main(){
@@ -40,5 +53,5 @@ int main(){
         indegree[v]++;
     }
     bool flag = topological_sort(n, adj, indegree);
-    cout << (flag ? "YES" : "NO") << endl;
+    cout << (flag ? "Yes" : "No") << endl;
 }
